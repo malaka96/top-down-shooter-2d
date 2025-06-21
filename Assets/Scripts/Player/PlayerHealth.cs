@@ -36,6 +36,14 @@ public class PlayerHealth : MonoBehaviour
             healthSlider.value = currentHealth;
     }
 
+    public void Heal(float amount)
+    {
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdateHealthUI();
+    }
+
+
     void Die()
     {
         Debug.Log("Player Died!");
