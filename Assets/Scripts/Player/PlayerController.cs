@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,6 +20,9 @@ public class PlayerController : MonoBehaviour
     public float fireRate = 5f; // bullets per second
     private float nextFireTime;
     public AudioClip shootingSfx;
+
+    [Header("Cinemachine Recoil")]
+    public CinemachineImpulseSource impulseSource;
 
     [Header("Animation")]
     public Animator animator;
@@ -72,7 +76,10 @@ public class PlayerController : MonoBehaviour
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         bullet.GetComponent<Bullet>().SetDirection(shootDir);
+
+        impulseSource?.GenerateImpulse();
     }
+
 
 
     void RotateWeaponToMouse()
