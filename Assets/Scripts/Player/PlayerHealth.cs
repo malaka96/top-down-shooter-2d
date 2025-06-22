@@ -8,6 +8,8 @@ public class PlayerHealth : MonoBehaviour
 
     public Slider healthSlider;
 
+    private bool isGameOver = false;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -46,8 +48,11 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Player Died!");
+        isGameOver = true;
+        GameManager.Instance.GameOver();
         // You can disable movement, show game over screen, etc.
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
+
+    public bool IsGameOver() { return isGameOver; }
 }

@@ -1,6 +1,7 @@
+using System.Linq.Expressions;
 using UnityEngine;
 
-public class TopDownPlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -17,13 +18,21 @@ public class TopDownPlayerController : MonoBehaviour
     public Transform firePoint;
     public float fireRate = 5f; // bullets per second
     private float nextFireTime;
+    public AudioClip shootingSfx;
 
     [Header("Animation")]
     public Animator animator;
 
+    private bool isPaused = false;
+
+    private PlayerHealth health;
+    private AudioSource audioSource;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        health = GetComponent<PlayerHealth>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -54,10 +63,12 @@ public class TopDownPlayerController : MonoBehaviour
 
     void Shoot()
     {
-        if (bulletPrefab == null || firePoint == null) return;
+        if (bulletPrefab == null || firePoint == null || isPaused || health.IsGameOver()) return;
 
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 shootDir = (mouseWorldPos - firePoint.position).normalized;
+
+        audioSource.PlayOneShot(shootingSfx);
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         bullet.GetComponent<Bullet>().SetDirection(shootDir);
@@ -67,6 +78,7 @@ public class TopDownPlayerController : MonoBehaviour
     void RotateWeaponToMouse()
     {
         if (weaponTransform == null) return;
+        if (isPaused) return;
 
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = mouseWorldPos - weaponTransform.position;
@@ -82,6 +94,7 @@ public class TopDownPlayerController : MonoBehaviour
 
         bool facingRight = lookDir.x >= 0f;
 
+        if (isPaused) return;
         // Flip player sprite
         if (playerSpriteRenderer != null)
             playerSpriteRenderer.flipX = !facingRight;
@@ -90,4 +103,6 @@ public class TopDownPlayerController : MonoBehaviour
         if (weaponSpriteRenderer != null)
             weaponSpriteRenderer.flipY = !facingRight;
     }
+
+    public void setPause(bool newState) { isPaused = newState; }
 }
